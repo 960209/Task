@@ -45,6 +45,18 @@
     </script>
     <style>
         /* Custom Grid Patterns & Utilities */
+        body::before {
+            content: "浮水印小川";
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 7rem;
+            color: rgba(0,0,0,0.04);
+            z-index: 9999;
+            pointer-events: none;
+            white-space: nowrap;
+        }
         .bg-grid-pattern {
             background-image: linear-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(90deg, #e2e8f0 1px, transparent 1px);
             background-size: 40px 40px;
