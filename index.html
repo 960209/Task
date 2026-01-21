@@ -65,19 +65,18 @@
             color: #1A1A1A;
             overflow-x: hidden;
         }
-body::before {
-  content: "浮水印小川";
-  position: fixed;       /* 固定在視窗 */
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(-30deg); /* 旋轉 */
-  font-size: 7rem;
-  color: rgba(0,0,0,0.04);  /* 半透明 */
-  z-index: 9999;
-  pointer-events: none;  /* 不影響點擊 */
-  white-space: nowrap;
-}
-
+        body::before {
+            content: "浮水印小川";
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            font-size: 7rem;
+            color: rgba(0,0,0,0.04);
+            z-index: 9999;
+            pointer-events: none;
+            white-space: nowrap;
+        }
         .vertical-text {
             writing-mode: vertical-rl;
             text-orientation: mixed;
@@ -515,5 +514,6 @@ body::before {
     </script>
 </body>
 </html>
+
 
 
