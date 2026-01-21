@@ -1,42 +1,58 @@
 <!DOCTYPE html>
-<html lang="zh-TW" class="scroll-smooth">
+<html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dr. Chen Education | 專業升學教育顧問</title>
+    <title>個人作品集 | Portfolio</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['"Noto Sans TC"', 'sans-serif'],
-                    },
                     colors: {
-                        slate: {
-                            50: '#f8fafc',
-                            800: '#1e293b',
-                            900: '#0f172a',
+                        stone: {
+                            50: '#F9F8F4', /* Paper-like background */
                         },
-                        red: {
-                            600: '#DC2626',
-                            700: '#b91c1c',
+                        neutral: {
+                            900: '#1A1A1A', /* Sharp Black */
+                            500: '#737373',
+                        },
+                        amber: {
+                            300: '#FCD34D',
+                        },
+                        orange: {
+                            400: '#FB923C',
                         }
+                    },
+                    fontFamily: {
+                        sans: ['Noto Sans TC', 'sans-serif'],
+                        english: ['Montserrat', 'sans-serif'],
                     },
                     animation: {
                         'float': 'float 6s ease-in-out infinite',
-                        'slide-up': 'slideUp 0.8s ease-out forwards',
+                        'blob': 'blob 7s infinite',
                     },
                     keyframes: {
                         float: {
                             '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' },
+                            '50%': { transform: 'translateY(-20px)' },
                         },
-                        slideUp: {
-                            '0%': { opacity: '0', transform: 'translateY(30px)' },
-                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
                         }
                     }
                 }
@@ -44,479 +60,454 @@
         }
     </script>
     <style>
-        /* Custom Grid Patterns & Utilities */
-        .bg-grid-pattern {
-            background-image: linear-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(90deg, #e2e8f0 1px, transparent 1px);
-            background-size: 40px 40px;
+        body {
+            background-color: #F9F8F4;
+            color: #1A1A1A;
+            overflow-x: hidden;
         }
-        .reveal-on-scroll {
+        .vertical-text {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+        .scroll-reveal {
             opacity: 0;
             transform: translateY(30px);
-            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .reveal-on-scroll.visible {
+        .scroll-reveal.visible {
             opacity: 1;
             transform: translateY(0);
         }
-        .input-underline {
-            border: none;
-            border-bottom: 2px solid #e2e8f0;
-            background: transparent;
-            padding: 0.75rem 0;
-            outline: none;
-            transition: border-color 0.3s;
+        /* Custom scrollbar for raw feel */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-        .input-underline:focus {
-            border-bottom-color: #DC2626;
+        ::-webkit-scrollbar-track {
+            background: #F9F8F4;
         }
-        /* Geometric Decorations */
-        .plus-symbol::after {
-            content: '+';
-            position: absolute;
-            color: #e2e8f0;
-            font-weight: 300;
-            font-size: 1.5rem;
+        ::-webkit-scrollbar-thumb {
+            background: #1A1A1A;
+            border-radius: 4px;
+        }
+        .backdrop-blur-md {
+            backdrop-filter: blur(12px);
         }
     </style>
 </head>
-<body oncontextmenu="return false" class="bg-white text-slate-800 font-sans antialiased overflow-x-hidden selection:bg-red-600 selection:text-white">
+<body oncontextmenu="return false">
+    <div id="root"></div>
 
-    <!-- Decorative Background Elements -->
-    <div class="fixed inset-0 z-[-1] pointer-events-none opacity-40">
-        <div class="absolute top-20 left-10 text-slate-200 text-6xl font-thin">+</div>
-        <div class="absolute top-1/3 right-20 text-slate-200 text-4xl font-thin">×</div>
-        <div class="absolute bottom-40 left-1/4 w-64 h-64 border border-slate-100 rounded-full"></div>
-    </div>
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
 
-    <!-- Navigation -->
-    <nav class="fixed w-full bg-white/90 backdrop-blur-md z-50 border-b border-slate-100 transition-all duration-300" id="navbar">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            <!-- Logo -->
-            <a href="#" class="flex items-center gap-2 group">
-                <div class="w-8 h-8 bg-red-600 flex items-center justify-center text-white font-bold rounded-sm group-hover:rotate-12 transition-transform">
-                    C
-                </div>
-                <span class="text-xl font-bold tracking-tight text-slate-900">CHEN<span class="font-light">EDU</span></span>
-            </a>
+        // --- Components ---
 
-            <!-- Desktop Menu -->
-            <div class="hidden md:flex items-center gap-10">
-                <a href="#hero" class="text-sm font-medium hover:text-red-600 relative group py-2">
-                    首頁
-                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all group-hover:w-full"></span>
-                </a>
-                <a href="#about" class="text-sm font-medium hover:text-red-600 relative group py-2">
-                    關於我
-                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all group-hover:w-full"></span>
-                </a>
-                <a href="#courses" class="text-sm font-medium hover:text-red-600 relative group py-2">
-                    精選課程
-                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all group-hover:w-full"></span>
-                </a>
-                <a href="#contact" class="text-sm font-medium hover:text-red-600 relative group py-2">
-                    聯絡預約
-                    <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-red-600 transition-all group-hover:w-full"></span>
-                </a>
-            </div>
+        // 1. Navigation
+        const Navbar = () => {
+            const [isOpen, setIsOpen] = useState(false);
 
-            <!-- CTA Button -->
-            <div class="flex items-center gap-4">
-                <a href="#contact" class="hidden md:inline-flex items-center justify-center px-6 py-2.5 text-sm font-bold text-white bg-red-600 rounded-sm shadow-lg shadow-red-600/20 hover:scale-105 hover:shadow-red-600/40 transition-all duration-300">
-                    立即預約試聽
-                </a>
-                <button class="md:hidden text-2xl text-slate-800">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </div>
-        </div>
-    </nav>
+            const navLinks = [
+                { name: '首頁', en: 'HOME', href: '#home' },
+                { name: '關於我', en: 'ABOUT', href: '#about' },
+                { name: '課程', en: 'COURSES', href: '#courses' },
+                { name: '聯絡', en: 'CONTACT', href: '#contact' },
+            ];
 
-    <!-- Hero Section -->
-    <section id="hero" class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-        <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-16 items-center">
-            <!-- Left: Content -->
-            <div class="relative z-10 reveal-on-scroll">
-                <div class="inline-block mb-4 px-3 py-1 bg-red-50 text-red-600 text-xs font-bold tracking-widest uppercase rounded-sm border border-red-100">
-                    Personal Education Blog
-                </div>
-                <h1 class="text-5xl lg:text-7xl font-extrabold text-slate-900 leading-tight mb-6">
-                    啟動學生的<br>
-                    <span class="relative">
-                        無限潛能
-                        <svg class="absolute -bottom-2 left-0 w-full h-3 text-red-600 opacity-30" viewBox="0 0 100 10" preserveAspectRatio="none">
-                            <path d="M0 5 Q 50 10 100 5" stroke="currentColor" stroke-width="8" fill="none" />
-                        </svg>
-                    </span>
-                </h1>
-                <p class="text-lg text-slate-600 mb-10 leading-relaxed max-w-lg">
-                    用最用心的教育理念，翻轉過去的填鴨式學習。在這裡，我們不只教授知識，更引導孩子找到屬於自己的人生坐標。
-                </p>
-                <div class="flex flex-wrap gap-4">
-                    <a href="#courses" class="px-8 py-3.5 bg-red-600 text-white font-bold rounded-sm shadow-xl shadow-red-600/20 hover:scale-105 transition-transform">
-                        探索課程
-                    </a>
-                    <a href="#about" class="px-8 py-3.5 bg-transparent border-2 border-slate-900 text-slate-900 font-bold rounded-sm hover:bg-slate-900 hover:text-white transition-colors">
-                        了解更多
-                    </a>
-                </div>
-            </div>
-
-            <!-- Right: Visual Collage -->
-            <div class="relative lg:h-[600px] flex items-center justify-center reveal-on-scroll" style="transition-delay: 200ms;">
-                <!-- Decorative Geometric Background -->
-                <div class="absolute inset-0 bg-slate-50 rounded-full scale-75 blur-3xl opacity-50"></div>
-                <div class="absolute top-0 right-0 w-64 h-64 border border-slate-200 opacity-50 animate-float" style="animation-delay: 1s;"></div>
-                <div class="absolute bottom-10 left-10 w-32 h-32 border border-red-200 rounded-full opacity-60 animate-float"></div>
-
-                <!-- Main Image -->
-                <div class="relative z-10 w-4/5 ml-auto shadow-2xl rounded-sm overflow-hidden transform hover:-translate-y-2 transition-transform duration-500">
-                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Student Learning" class="w-full h-auto object-cover">
-                    <!-- Badge -->
-                    <div class="absolute bottom-0 right-0 bg-white p-4 shadow-lg flex flex-col items-center justify-center w-24 h-24">
-                        <span class="text-red-600 font-black text-2xl">100</span>
-                        <span class="text-xs text-slate-500 font-bold uppercase">Days</span>
-                    </div>
-                </div>
-
-                <!-- Secondary Floating Image -->
-                <div class="absolute -bottom-10 -left-4 w-2/5 z-20 shadow-2xl rounded-sm overflow-hidden border-4 border-white animate-float">
-                    <img src="https://images.unsplash.com/photo-1544717305-2782549b5136?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="Teacher" class="w-full h-auto object-cover">
-                </div>
-                
-                <!-- Lines -->
-                <div class="absolute top-1/2 left-1/4 w-full h-[1px] bg-slate-200 -z-10"></div>
-                <div class="absolute top-1/4 left-1/2 h-full w-[1px] bg-slate-200 -z-10"></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Stats / Trust Section -->
-    <section id="about" class="py-24 bg-slate-50 relative">
-        <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent"></div>
-        
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="text-center mb-16 reveal-on-scroll">
-                <span class="text-red-600 font-bold tracking-widest text-sm uppercase">About Us</span>
-                <h2 class="text-3xl md:text-4xl font-bold mt-2 text-slate-900">深耕教育多年的堅持</h2>
-                <p class="mt-4 text-slate-500 max-w-2xl mx-auto">
-                    用數據證明我們的專業，用熱情點燃學生的未來。
-                </p>
-            </div>
-
-            <!-- Infographic Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
-                <!-- Decorative Connecting Line (Desktop) -->
-                <div class="hidden lg:block absolute top-1/2 left-0 w-full h-px bg-slate-200 -z-10"></div>
-
-                <!-- Card 1 -->
-                <div class="bg-white p-8 rounded-sm shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative group reveal-on-scroll">
-                    <div class="absolute top-0 left-0 w-full h-1 bg-red-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                    <div class="text-5xl font-black text-slate-900 mb-2 group-hover:text-red-600 transition-colors">15<span class="text-2xl align-top">+</span></div>
-                    <h3 class="text-lg font-bold mb-2">年教學經驗</h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">累積豐富的教學現場經驗，洞悉各類考試趨勢。</p>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="bg-white p-8 rounded-sm shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative group reveal-on-scroll" style="transition-delay: 100ms;">
-                    <div class="absolute top-0 left-0 w-full h-1 bg-red-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                    <div class="text-5xl font-black text-slate-900 mb-2 group-hover:text-red-600 transition-colors">2000<span class="text-2xl align-top">+</span></div>
-                    <h3 class="text-lg font-bold mb-2">位指導學生</h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">協助無數學生突破自我，考取理想志願。</p>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="bg-white p-8 rounded-sm shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative group reveal-on-scroll" style="transition-delay: 200ms;">
-                    <div class="absolute top-0 left-0 w-full h-1 bg-red-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                    <div class="text-5xl font-black text-slate-900 mb-2 group-hover:text-red-600 transition-colors">5<span class="text-2xl align-top"></span></div>
-                    <h3 class="text-lg font-bold mb-2">大專業校區</h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">遍布市中心的學習據點，提供最便利的學習環境。</p>
-                </div>
-
-                <!-- Card 4 -->
-                <div class="bg-white p-8 rounded-sm shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative group reveal-on-scroll" style="transition-delay: 300ms;">
-                    <div class="absolute top-0 left-0 w-full h-1 bg-red-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                    <div class="text-5xl font-black text-slate-900 mb-2 group-hover:text-red-600 transition-colors">100<span class="text-2xl align-top">%</span></div>
-                    <h3 class="text-lg font-bold mb-2">專業熱忱</h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">每一堂課都是全力以赴，為學生解惑指引。</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Courses Section -->
-    <section id="courses" class="py-24 relative bg-white">
-        <!-- Decorative Grid Background -->
-        <div class="absolute top-0 right-0 w-1/3 h-full bg-grid-pattern opacity-30 pointer-events-none"></div>
-
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-12 reveal-on-scroll">
-                <div>
-                    <span class="text-red-600 font-bold tracking-widest text-sm uppercase">Latest Courses</span>
-                    <h2 class="text-3xl md:text-4xl font-bold mt-2 text-slate-900">熱門首選課程</h2>
-                </div>
-                <div class="hidden md:flex gap-2">
-                    <button class="w-10 h-10 rounded-full border border-slate-300 flex items-center justify-center text-slate-400 hover:border-red-600 hover:text-red-600 transition-colors"><i class="fas fa-chevron-left"></i></button>
-                    <button class="w-10 h-10 rounded-full bg-red-600 text-white flex items-center justify-center shadow-lg hover:scale-110 transition-transform"><i class="fas fa-chevron-right"></i></button>
-                </div>
-            </div>
-
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Course Card 1 -->
-                <article class="group bg-white border border-slate-100 rounded-sm overflow-hidden hover:shadow-2xl transition-all duration-300 reveal-on-scroll">
-                    <div class="relative overflow-hidden h-60">
-                        <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Math" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
-                        <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 text-xs font-bold uppercase tracking-wider text-slate-900 shadow-sm">
-                            數學進度班
-                        </div>
-                    </div>
-                    <div class="p-8 relative">
-                        <h3 class="text-xl font-bold text-slate-900 mb-3 group-hover:text-red-600 transition-colors">國中數學資優培訓</h3>
-                        <p class="text-slate-500 mb-6 line-clamp-2 leading-relaxed">
-                            由專業名師親自授課，著重邏輯思考與解題技巧，為高中數學打下堅實基礎。
-                        </p>
-                        <a href="#" class="inline-flex items-center text-sm font-bold text-slate-900 hover:text-red-600 transition-colors">
-                            課程詳情 <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Course Card 2 -->
-                <article class="group bg-white border border-slate-100 rounded-sm overflow-hidden hover:shadow-2xl transition-all duration-300 reveal-on-scroll" style="transition-delay: 100ms;">
-                    <div class="relative overflow-hidden h-60">
-                        <img src="https://images.unsplash.com/photo-1532094349884-543bc11b234d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Science" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
-                        <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 text-xs font-bold uppercase tracking-wider text-slate-900 shadow-sm">
-                            科學實驗
-                        </div>
-                    </div>
-                    <div class="p-8 relative">
-                        <h3 class="text-xl font-bold text-slate-900 mb-3 group-hover:text-red-600 transition-colors">高中物理化學全攻略</h3>
-                        <p class="text-slate-500 mb-6 line-clamp-2 leading-relaxed">
-                            透過實驗與理論結合，讓抽象的物理化學變得生動有趣，輕鬆掌握考試重點。
-                        </p>
-                        <a href="#" class="inline-flex items-center text-sm font-bold text-slate-900 hover:text-red-600 transition-colors">
-                            課程詳情 <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
-                        </a>
-                    </div>
-                </article>
-
-                <!-- Course Card 3 -->
-                <article class="group bg-white border border-slate-100 rounded-sm overflow-hidden hover:shadow-2xl transition-all duration-300 reveal-on-scroll" style="transition-delay: 200ms;">
-                    <div class="relative overflow-hidden h-60">
-                        <img src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Literature" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
-                        <div class="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 text-xs font-bold uppercase tracking-wider text-slate-900 shadow-sm">
-                            國文寫作
-                        </div>
-                    </div>
-                    <div class="p-8 relative">
-                        <h3 class="text-xl font-bold text-slate-900 mb-3 group-hover:text-red-600 transition-colors">素養閱讀與寫作班</h3>
-                        <p class="text-slate-500 mb-6 line-clamp-2 leading-relaxed">
-                            針對新課綱素養導向命題，提升閱讀理解能力與批判性寫作技巧。
-                        </p>
-                        <a href="#" class="inline-flex items-center text-sm font-bold text-slate-900 hover:text-red-600 transition-colors">
-                            課程詳情 <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
-                        </a>
-                    </div>
-                </article>
-            </div>
-
-            <div class="mt-12 text-center">
-                <a href="#" class="inline-block px-10 py-3 border-2 border-slate-200 text-slate-500 font-bold rounded-sm hover:border-slate-900 hover:text-slate-900 transition-all">
-                    查看所有課程
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact / Booking Section -->
-    <section id="contact" class="py-24 bg-slate-50 relative overflow-hidden">
-        <!-- Background Decor -->
-        <div class="absolute top-0 right-0 w-1/2 h-full bg-white transform skew-x-12 translate-x-32 hidden lg:block"></div>
-
-        <div class="max-w-7xl mx-auto px-6 relative z-10">
-            <div class="grid lg:grid-cols-2 gap-16">
-                <!-- Contact Form -->
-                <div class="bg-white p-10 lg:p-12 shadow-2xl rounded-sm border-t-4 border-red-600 reveal-on-scroll">
-                    <h2 class="text-3xl font-bold text-slate-900 mb-2">預約試聽諮詢</h2>
-                    <p class="text-slate-500 mb-8">請填寫以下表格，我們將由專人與您聯繫安排。</p>
-                    
-                    <form action="#" class="space-y-8">
-                        <div class="grid md:grid-cols-2 gap-8">
-                            <div>
-                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">家長姓名</label>
-                                <input type="text" class="w-full input-underline text-slate-900 placeholder-slate-300" placeholder="王小明">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">聯絡電話</label>
-                                <input type="tel" class="w-full input-underline text-slate-900 placeholder-slate-300" placeholder="0912-345-678">
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">電子信箱</label>
-                            <input type="email" class="w-full input-underline text-slate-900 placeholder-slate-300" placeholder="example@email.com">
+            return (
+                <nav className="fixed top-0 left-0 w-full z-50 py-6 px-6 md:px-12 transition-all duration-300 bg-stone-50/90 backdrop-blur-sm border-b border-neutral-200">
+                    <div className="max-w-7xl mx-auto flex justify-between items-center">
+                        <div className="flex flex-col leading-none">
+                            <span className="font-english font-black text-2xl tracking-widest">YUN.DESIGN</span>
+                            <span className="text-xs text-neutral-500 tracking-wider">個人作品與教學</span>
                         </div>
 
-                        <div>
-                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">想諮詢的課程</label>
-                            <select class="w-full input-underline text-slate-900 bg-transparent">
-                                <option>國中數學資優班</option>
-                                <option>高中物理化學</option>
-                                <option>國文寫作素養</option>
-                                <option>其他升學諮詢</option>
-                            </select>
+                        {/* Desktop Nav */}
+                        <div className="hidden md:flex space-x-12">
+                            {navLinks.map((link) => (
+                                <a key={link.name} href={link.href} className="group relative flex flex-col items-center">
+                                    <span className="font-english text-xs font-bold tracking-widest text-neutral-400 group-hover:text-orange-400 transition-colors">{link.en}</span>
+                                    <span className="font-bold text-sm mt-1">{link.name}</span>
+                                </a>
+                            ))}
                         </div>
 
-                        <div class="pt-4">
-                            <button type="button" class="w-full py-4 bg-red-600 text-white font-bold tracking-widest uppercase rounded-sm hover:bg-red-700 hover:shadow-lg transform active:scale-95 transition-all">
-                                送出預約申請
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Contact Info -->
-                <div class="flex flex-col justify-center reveal-on-scroll" style="transition-delay: 200ms;">
-                    <div class="mb-12">
-                        <h3 class="text-2xl font-bold text-slate-900 mb-6">聯絡資訊</h3>
-                        <div class="space-y-6">
-                            <div class="flex items-start gap-4">
-                                <div class="w-10 h-10 rounded-sm bg-red-50 text-red-600 flex items-center justify-center flex-shrink-0">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-slate-900">總部地址</h4>
-                                    <p class="text-slate-500">台北市大安區信義路</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-4">
-                                <div class="w-10 h-10 rounded-sm bg-red-50 text-red-600 flex items-center justify-center flex-shrink-0">
-                                    <i class="fas fa-phone-alt"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-slate-900">諮詢專線</h4>
-                                    <p class="text-slate-500">02-2345-6789</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-4">
-                                <div class="w-10 h-10 rounded-sm bg-red-50 text-red-600 flex items-center justify-center flex-shrink-0">
-                                    <i class="fas fa-envelope"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-bold text-slate-900">電子郵件</h4>
-                                    <p class="text-slate-500">a123456@gmail.com</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Visual or Map placeholder -->
-                    <div class="relative w-full h-64 bg-slate-200 rounded-sm overflow-hidden shadow-inner group">
-                        <!-- Styled Placeholder for Map -->
-                        <div class="absolute inset-0 bg-slate-300 flex items-center justify-center text-slate-500 font-medium">
-                           <i class="fas fa-map text-4xl mb-2"></i>
-                           <span class="absolute bottom-4">Google Maps View</span>
-                        </div>
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3614.994541786522!2d121.5398!3d25.0345!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjXCsDAyJzA0LjIiTiAxMjHCsDMyJzIzLjMiRQ!5e0!3m2!1sen!2stw!4v1620000000000!5m2!1sen!2stw" width="100%" height="100%" style="border:0; filter: grayscale(1) contrast(1.2); opacity: 0.6;" allowfullscreen="" loading="lazy" class="hover:opacity-100 hover:filter-none transition-all duration-500"></iframe>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-slate-900 text-white pt-20 pb-10 border-t-4 border-red-600">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid md:grid-cols-4 gap-12 mb-16">
-                <div class="col-span-1 md:col-span-1">
-                     <div class="flex items-center gap-2 mb-6">
-                        <div class="w-8 h-8 bg-red-600 flex items-center justify-center font-bold rounded-sm text-sm">
-                            C
-                        </div>
-                        <span class="text-xl font-bold">CHEN<span class="font-light text-slate-400">EDU</span></span>
-                    </div>
-                    <p class="text-slate-400 text-sm leading-relaxed">
-                        致力於提供最優質的升學教育服務，啟發每一位學生的潛能，成就未來的領袖。
-                    </p>
-                </div>
-                
-                <div>
-                    <h4 class="text-lg font-bold mb-6">快速連結</h4>
-                    <ul class="space-y-3 text-slate-400 text-sm">
-                        <li><a href="#" class="hover:text-red-500 transition-colors">關於我們</a></li>
-                        <li><a href="#" class="hover:text-red-500 transition-colors">師資介紹</a></li>
-                        <li><a href="#" class="hover:text-red-500 transition-colors">課程總覽</a></li>
-                        <li><a href="#" class="hover:text-red-500 transition-colors">升學榜單</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="text-lg font-bold mb-6">課程類別</h4>
-                    <ul class="space-y-3 text-slate-400 text-sm">
-                        <li><a href="#" class="hover:text-red-500 transition-colors">國中全科班</a></li>
-                        <li><a href="#" class="hover:text-red-500 transition-colors">高中數理資優</a></li>
-                        <li><a href="#" class="hover:text-red-500 transition-colors">學測衝刺營</a></li>
-                        <li><a href="#" class="hover:text-red-500 transition-colors">一對一指導</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="text-lg font-bold mb-6">訂閱電子報</h4>
-                    <p class="text-slate-400 text-sm mb-4">獲取最新的教育資訊與升學情報。</p>
-                    <div class="flex">
-                        <input type="email" placeholder="Email Address" class="bg-slate-800 border-none text-white px-4 py-2 w-full focus:ring-1 focus:ring-red-600 outline-none placeholder-slate-500">
-                        <button class="bg-red-600 px-4 py-2 hover:bg-red-700 transition-colors">
-                            <i class="fas fa-arrow-right"></i>
+                        {/* Mobile Hamburger */}
+                        <button onClick={() => setIsOpen(!isOpen)} className="md:hidden space-y-2">
+                            <div className={`w-8 h-0.5 bg-neutral-900 transition-transform ${isOpen ? 'rotate-45 translate-y-2.5' : ''}`}></div>
+                            <div className={`w-8 h-0.5 bg-neutral-900 transition-opacity ${isOpen ? 'opacity-0' : ''}`}></div>
+                            <div className={`w-8 h-0.5 bg-neutral-900 transition-transform ${isOpen ? '-rotate-45 -translate-y-2.5' : ''}`}></div>
                         </button>
                     </div>
-                </div>
-            </div>
 
-            <div class="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center">
-                <p class="text-slate-500 text-sm mb-4 md:mb-0">&copy; 2023 Dr. Chen Education. All rights reserved.</p>
-                <div class="flex gap-6">
-                    <a href="#" class="text-slate-400 hover:text-white transition-colors"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="text-slate-400 hover:text-white transition-colors"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="text-slate-400 hover:text-white transition-colors"><i class="fab fa-youtube"></i></a>
-                    <a href="#" class="text-slate-400 hover:text-white transition-colors"><i class="fab fa-line"></i></a>
-                </div>
-            </div>
-        </div>
-    </footer>
+                    {/* Mobile Menu */}
+                    {isOpen && (
+                        <div className="absolute top-full left-0 w-full bg-stone-50 h-screen flex flex-col items-center pt-20 space-y-8 md:hidden shadow-xl">
+                             {navLinks.map((link) => (
+                                <a 
+                                    key={link.name} 
+                                    href={link.href} 
+                                    onClick={() => setIsOpen(false)}
+                                    className="text-center"
+                                >
+                                    <div className="font-english text-sm text-orange-400 font-bold tracking-widest">{link.en}</div>
+                                    <div className="text-2xl font-bold mt-2">{link.name}</div>
+                                </a>
+                            ))}
+                        </div>
+                    )}
+                </nav>
+            );
+        };
 
-    <!-- Simple Scroll Animation Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Navbar Scroll Effect
-            const navbar = document.getElementById('navbar');
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 50) {
-                    navbar.classList.add('shadow-md');
-                } else {
-                    navbar.classList.remove('shadow-md');
-                }
-            });
+        // 2. Reveal Animation Wrapper
+        const Reveal = ({ children, className = "", delay = 0 }) => {
+            const ref = useRef(null);
+            const [isVisible, setIsVisible] = useState(false);
 
-            // Intersection Observer for Reveal Animations
-            const observerOptions = {
-                threshold: 0.15,
-                rootMargin: '0px 0px -50px 0px'
-            };
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
+            useEffect(() => {
+                const observer = new IntersectionObserver(([entry]) => {
                     if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        observer.unobserve(entry.target);
+                        setIsVisible(true);
+                        observer.disconnect();
                     }
-                });
-            }, observerOptions);
+                }, { threshold: 0.1 });
 
-            document.querySelectorAll('.reveal-on-scroll').forEach(el => {
-                observer.observe(el);
-            });
-        });
+                if (ref.current) observer.observe(ref.current);
+                return () => observer.disconnect();
+            }, []);
+
+            return (
+                <div ref={ref} className={`scroll-reveal ${isVisible ? 'visible' : ''} ${className}`} style={{ transitionDelay: `${delay}ms` }}>
+                    {children}
+                </div>
+            );
+        };
+
+        // 3. Hero Section
+        const Hero = () => {
+            return (
+                <section id="home" className="relative min-h-screen pt-32 pb-20 px-6 md:px-12 flex flex-col md:flex-row items-center overflow-hidden">
+                    {/* Background Blob */}
+                    <div className="absolute top-0 right-[-10%] w-[600px] h-[600px] bg-gradient-to-br from-amber-300/40 to-orange-400/40 rounded-full blur-[80px] animate-blob -z-10"></div>
+                    
+                    <div className="w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
+                        <div className="md:col-span-7 space-y-8">
+                            <Reveal>
+                                <div className="inline-flex items-center space-x-3 mb-4">
+                                    <span className="w-12 h-[1px] bg-neutral-900"></span>
+                                    <span className="font-english text-sm font-bold tracking-[0.2em] text-neutral-500">PORTFOLIO 2024</span>
+                                </div>
+                            </Reveal>
+                            <Reveal delay={200}>
+                                <h1 className="text-5xl md:text-7xl font-bold leading-tight">
+                                    設計思維<br/>
+                                    <span className="font-english font-black italic text-transparent bg-clip-text bg-gradient-to-r from-neutral-900 to-neutral-600">ONLINE & OFFLINE</span><br/>
+                                    與創意的交匯
+                                </h1>
+                            </Reveal>
+                            <Reveal delay={400}>
+                                <p className="text-neutral-600 text-lg leading-loose max-w-lg">
+                                    這是一個關於探索、學習與分享的空間。結合美學與邏輯，為每一個專案注入溫暖與智慧。
+                                </p>
+                            </Reveal>
+                            <Reveal delay={600}>
+                                <a href="#courses" className="inline-block mt-4 px-8 py-3 rounded-full border border-neutral-900 font-bold hover:bg-neutral-900 hover:text-white transition-all transform hover:scale-105">
+                                    查看課程
+                                </a>
+                            </Reveal>
+                        </div>
+
+                        <div className="md:col-span-5 relative flex justify-center">
+                            {/* Placeholder Illustration (Using SVG for Line Art Style) */}
+                            <Reveal delay={300} className="relative">
+                                <div className="w-80 h-96 border-2 border-neutral-900 rounded-t-full bg-white/50 backdrop-blur-sm relative overflow-hidden">
+                                     <img 
+                                        src="https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1000&auto=format&fit=crop" 
+                                        alt="Portrait" 
+                                        className="w-full h-full object-cover grayscale opacity-90 hover:grayscale-0 transition-all duration-700"
+                                     />
+                                     {/* Sticker Effect */}
+                                     <div className="absolute bottom-4 right-4 bg-amber-300 text-neutral-900 text-xs font-bold px-3 py-1 rounded-full rotate-[-5deg] shadow-lg">
+                                        Hello!
+                                     </div>
+                                </div>
+                                {/* Decorative cat illustration placeholder */}
+                                <svg className="absolute -bottom-6 -left-12 w-32 h-32 text-neutral-900 animate-float" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <path d="M30 60 Q 20 40 40 30 Q 60 20 70 40 Q 80 60 60 70 Q 40 80 30 60" />
+                                    <circle cx="45" cy="45" r="3" fill="currentColor"/>
+                                    <circle cx="60" cy="42" r="3" fill="currentColor"/>
+                                    <path d="M50 50 Q 55 55 50 60" strokeLinecap="round"/>
+                                    <path d="M20 30 L 35 35" />
+                                    <path d="M20 40 L 32 42" />
+                                </svg>
+                            </Reveal>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        // 4. About Section
+        const About = () => {
+            return (
+                <section id="about" className="py-24 px-6 md:px-12 bg-white">
+                    <div className="max-w-7xl mx-auto">
+                         <div className="flex flex-col md:flex-row gap-16">
+                             {/* Left Title Column */}
+                            <div className="md:w-1/4">
+                                <Reveal>
+                                    <h2 className="font-english text-6xl font-black text-neutral-200 absolute -translate-y-10 -translate-x-4 select-none">ABOUT</h2>
+                                    <h2 className="relative text-3xl font-bold mb-6">關於我</h2>
+                                    <div className="w-full h-[1px] bg-neutral-900 mb-4"></div>
+                                    <p className="font-english text-sm font-bold tracking-widest text-neutral-400">WHO I AM</p>
+                                </Reveal>
+                            </div>
+
+                            {/* Right Content Column */}
+                            <div className="md:w-3/4 grid md:grid-cols-2 gap-12">
+                                <Reveal delay={200}>
+                                    <p className="text-lg leading-loose text-justify">
+                                        我是 <strong>Yun</strong>，一名遊走於代碼與畫布之間的數位遊牧者。相信好的設計不僅僅是視覺的堆疊，更是為了解決問題而生的溫柔語言。
+                                        <br/><br/>
+                                        曾任職於頂尖科技公司，現專注於 Web 開發教學與 UI/UX 設計諮詢。我喜歡將複雜的技術概念拆解成易懂的日常比喻，讓每個人都能享受創造的樂趣。
+                                    </p>
+                                    <ul className="mt-8 space-y-4">
+                                        {['5+ 年前端開發經驗', 'UX/UI 設計講師', '數百位學員好評'].map((item, i) => (
+                                            <li key={i} className="flex items-center space-x-3">
+                                                <span className="w-2 h-2 bg-orange-400 rounded-full"></span>
+                                                <span className="font-medium">{item}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </Reveal>
+                                <Reveal delay={400} className="relative">
+                                    <div className="relative z-10 bg-stone-50 p-6 rounded-2xl shadow-xl rotate-2 hover:rotate-0 transition-transform duration-500">
+                                        <div className="aspect-[4/5] overflow-hidden rounded-lg bg-neutral-200">
+                                            <img src="https://images.unsplash.com/photo-1493612276216-ee3925520721?q=80&w=800&auto=format&fit=crop" alt="Workspace" className="w-full h-full object-cover"/>
+                                        </div>
+                                        <div className="mt-4 flex justify-between items-center">
+                                            <span className="font-english font-bold text-xs tracking-widest">MY WORKSPACE</span>
+                                            <span className="text-xs text-neutral-400">Kyoto, Japan</span>
+                                        </div>
+                                    </div>
+                                    {/* Decor */}
+                                    <div className="absolute top-10 -right-4 w-24 h-24 bg-amber-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 z-0"></div>
+                                </Reveal>
+                            </div>
+                         </div>
+                    </div>
+                </section>
+            );
+        };
+
+        // 5. Courses Section
+        const Courses = () => {
+            const courses = [
+                {
+                    date: '2024.06.15',
+                    category: 'DESIGN',
+                    title: 'UI/UX 設計實戰班',
+                    desc: '從零開始學習 Figma，掌握使用者體驗的核心原則，打造能落地的產品介面。',
+                    tagColor: 'bg-indigo-50 text-indigo-600'
+                },
+                {
+                    date: '2024.07.01',
+                    category: 'CODING',
+                    title: 'React 前端開發入門',
+                    desc: '現代網頁開發必備技能。透過實作專案，理解 Component 邏輯與 Hooks 應用。',
+                    tagColor: 'bg-emerald-50 text-emerald-600'
+                },
+                {
+                    date: '2024.08.20',
+                    category: 'WORKSHOP',
+                    title: '週末創意 Coding 工作坊',
+                    desc: '結合 p5.js 與生成式藝術，讓程式碼成為你的畫筆，探索數位藝術的無限可能。',
+                    tagColor: 'bg-amber-50 text-amber-600'
+                }
+            ];
+
+            return (
+                <section id="courses" className="py-24 px-6 md:px-12 relative overflow-hidden">
+                     <div className="absolute -left-20 top-40 w-96 h-96 bg-stone-200/50 rounded-full blur-3xl -z-10"></div>
+
+                    <div className="max-w-7xl mx-auto">
+                        <Reveal>
+                            <div className="flex items-end justify-between mb-16 border-b border-neutral-900 pb-6">
+                                <div>
+                                    <h2 className="text-4xl font-bold mb-2">精選課程</h2>
+                                    <p className="text-neutral-500">FEATURED COURSES & WORKSHOPS</p>
+                                </div>
+                                <a href="#" className="hidden md:flex items-center space-x-2 text-sm font-bold hover:text-orange-500 transition-colors">
+                                    <span>VIEW ALL</span>
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                                </a>
+                            </div>
+                        </Reveal>
+
+                        <div className="grid md:grid-cols-3 gap-8">
+                            {courses.map((course, idx) => (
+                                <Reveal key={idx} delay={idx * 200}>
+                                    <div className="group relative bg-white/60 backdrop-blur-md rounded-2xl p-8 border border-white shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 h-full flex flex-col">
+                                        <div className="flex justify-between items-start mb-6">
+                                            <span className={`px-3 py-1 rounded-full text-xs font-bold tracking-wider ${course.tagColor}`}>
+                                                {course.category}
+                                            </span>
+                                            <span className="font-english text-xs font-medium text-neutral-400">{course.date}</span>
+                                        </div>
+                                        <h3 className="text-xl font-bold mb-4 group-hover:text-orange-500 transition-colors">{course.title}</h3>
+                                        <p className="text-neutral-600 text-sm leading-relaxed mb-8 flex-grow">
+                                            {course.desc}
+                                        </p>
+                                        <button className="w-12 h-12 rounded-full border border-neutral-200 flex items-center justify-center group-hover:bg-neutral-900 group-hover:border-neutral-900 group-hover:text-white transition-all self-end">
+                                            <svg className="w-4 h-4 transform group-hover:rotate-45 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                        </button>
+                                    </div>
+                                </Reveal>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        // 6. Contact & Booking Section
+        const ContactBooking = () => {
+            return (
+                <section id="contact" className="py-24 px-6 md:px-12 bg-stone-100/50">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="grid md:grid-cols-12 gap-12">
+                            {/* Contact Info */}
+                            <div className="md:col-span-5 space-y-8">
+                                <Reveal>
+                                    <h2 className="text-4xl font-bold mb-6">聯絡與預約</h2>
+                                    <p className="text-neutral-600 mb-8">
+                                        有任何合作提案或課程疑問？<br/>
+                                        歡迎透過右側表單預約諮詢時間，或直接寫信給我。
+                                    </p>
+                                    
+                                    <div className="space-y-6">
+                                        <div className="flex items-center space-x-4">
+                                            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                            </div>
+                                            <span className="font-english font-medium">hello@yundesign.com</span>
+                                        </div>
+                                        <div className="flex items-center space-x-4">
+                                            <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                            </div>
+                                            <span className="font-medium">台北市信義區 (Remote Available)</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-8 flex space-x-4">
+                                        <a href="#" className="text-sm font-bold border-b border-black pb-1 hover:text-orange-500 hover:border-orange-500 transition-all">INSTAGRAM</a>
+                                        <a href="#" className="text-sm font-bold border-b border-black pb-1 hover:text-orange-500 hover:border-orange-500 transition-all">LINKEDIN</a>
+                                    </div>
+                                </Reveal>
+                            </div>
+
+                            {/* Booking Widget */}
+                            <div className="md:col-span-7">
+                                <Reveal delay={200}>
+                                    <div className="bg-white rounded-3xl p-8 shadow-xl border border-neutral-100">
+                                        <div className="flex justify-between items-center mb-8">
+                                            <h3 className="font-bold text-xl">線上預約諮詢</h3>
+                                            <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">Available Now</span>
+                                        </div>
+
+                                        <div className="flex flex-col md:flex-row gap-8">
+                                            {/* Calendar Visual */}
+                                            <div className="md:w-1/2">
+                                                <div className="text-center font-bold mb-4">May 2024</div>
+                                                <div className="grid grid-cols-7 gap-2 text-center text-sm">
+                                                    {['S','M','T','W','T','F','S'].map(d => <span key={d} className="text-neutral-400 text-xs">{d}</span>)}
+                                                    {/* Days Generator */}
+                                                    {Array.from({length: 31}, (_, i) => i + 1).map(day => {
+                                                        const isAvailable = [4, 5, 11, 12, 18, 19, 25, 26].includes(day); // Random weekends
+                                                        const isSelected = day === 18;
+                                                        return (
+                                                            <button 
+                                                                key={day} 
+                                                                className={`
+                                                                    w-8 h-8 rounded-full flex items-center justify-center text-xs transition-all
+                                                                    ${isSelected ? 'bg-neutral-900 text-white shadow-lg scale-110' : ''}
+                                                                    ${isAvailable ? 'hover:bg-orange-100 text-neutral-900 font-medium' : 'text-neutral-300 cursor-not-allowed'}
+                                                                `}
+                                                                disabled={!isAvailable}
+                                                            >
+                                                                {day}
+                                                            </button>
+                                                        )
+                                                    })}
+                                                </div>
+                                                <div className="mt-6 text-center">
+                                                    <span className="block text-xs text-neutral-400 mb-1">SELECTED DATE</span>
+                                                    <span className="font-bold text-lg">May 18, 2024 (Sat)</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Form */}
+                                            <div className="md:w-1/2 space-y-6">
+                                                <div>
+                                                    <label className="block text-xs font-bold text-neutral-500 mb-1">NAME</label>
+                                                    <input type="text" placeholder="您的姓名" className="w-full border-b border-neutral-300 py-2 focus:outline-none focus:border-neutral-900 transition-colors bg-transparent" />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-bold text-neutral-500 mb-1">EMAIL</label>
+                                                    <input type="email" placeholder="email@example.com" className="w-full border-b border-neutral-300 py-2 focus:outline-none focus:border-neutral-900 transition-colors bg-transparent" />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-xs font-bold text-neutral-500 mb-1">MESSAGE</label>
+                                                    <textarea rows="2" placeholder="想諮詢的內容..." className="w-full border-b border-neutral-300 py-2 focus:outline-none focus:border-neutral-900 transition-colors bg-transparent resize-none"></textarea>
+                                                </div>
+                                                <button className="w-full bg-neutral-900 text-white font-bold py-3 rounded-full hover:bg-orange-500 transition-colors shadow-lg">
+                                                    確認預約
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Reveal>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            );
+        };
+
+        const Footer = () => (
+            <footer className="bg-neutral-900 text-white py-12 px-6 md:px-12 text-center md:text-left">
+                <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
+                    <div className="mb-6 md:mb-0">
+                        <h4 className="font-english font-bold text-2xl tracking-widest mb-2">YUN.DESIGN</h4>
+                        <p className="text-neutral-500 text-xs">© 2024 YUN PORTFOLIO. All Rights Reserved.</p>
+                    </div>
+                    <div className="flex space-x-8">
+                         <a href="#" className="text-neutral-400 hover:text-white transition-colors text-xs font-bold tracking-widest">PRIVACY</a>
+                         <a href="#" className="text-neutral-400 hover:text-white transition-colors text-xs font-bold tracking-widest">TERMS</a>
+                    </div>
+                </div>
+            </footer>
+        );
+
+        // Main App Component
+        const App = () => {
+            return (
+                <div className="font-sans text-neutral-900 selection:bg-orange-200">
+                    <Navbar />
+                    <main>
+                        <Hero />
+                        <About />
+                        <Courses />
+                        <ContactBooking />
+                    </main>
+                    <Footer />
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
-
 </html>
-
